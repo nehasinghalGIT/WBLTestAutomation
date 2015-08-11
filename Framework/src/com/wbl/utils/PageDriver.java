@@ -79,7 +79,6 @@ public class PageDriver {
         if (_webDriver == null) {
             return;
         }
-
         _webDriver.quit();
         _webDriver = null;
 
