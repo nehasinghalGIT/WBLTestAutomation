@@ -1,9 +1,16 @@
 package com.wbl.utils;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+import org.openqa.selenium.ie.InternetExplorerDriver;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
@@ -25,7 +32,11 @@ public class PageDriver {
 
     public WebDriver getDriver() {
         if (_webDriver == null) {
-            Start();
+            try {
+                Start();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         return _webDriver;
     }
@@ -77,7 +88,11 @@ public class PageDriver {
 
     public void open(String url) {
         _webDriver.navigate().to(url);
-        implicitWait();
+        try {
+            implicitWait();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void implicitWait() throws Exception {
@@ -89,78 +104,66 @@ public class PageDriver {
     }
 
     public String GetCurrentUrl() {
-        return WebDriver.Url;
+        return _webDriver.getCurrentUrl();
     }
 
-    public void SaveScreenshot(string path) {
-        ((ITakesScreenshot) WebDriver).GetScreenshot().SaveAsFile(path, ImageFormat.Jpeg);
+    public void SaveScreenshot(String path) {
+        try {
+            FileUtils.copyFile(((TakesScreenshot) _webDriver).getScreenshotAs(OutputType.FILE),new File(path));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public object ExecuteJavaScript(string javaScript, params object[]args) {
-        var javaScriptExecutor = (IJavaScriptExecutor) WebDriver;
+    public Object ExecuteJavaScript(String javaScript, Object[] args) {
+        JavascriptExecutor javaScriptExecutor = (JavascriptExecutor) _webDriver;
 
-        return javaScriptExecutor.ExecuteScript(javaScript, args);
+        return javaScriptExecutor.executeScript(javaScript, args);
     }
 
-    public string GetDescription() {
+    public String GetDescription() {
         return "Browser";
     }
 
-    private void Start() {
-        switch (BrowserType) {
-            case Browsers.InternetExplorer:
+    private void Start() throws Exception {
+        switch (_browser) {
+            case InternetExplorer:
                 _webDriver = StartInternetExplorer();
                 break;
-            case Browsers.Firefox:
+            case Firefox:
                 _webDriver = StartFirefox();
                 break;
-            case Browsers.Chrome:
+            case Chrome:
                 _webDriver = StartChrome();
                 break;
-            case Browsers.SimpleBrowser:
-                _webDriver = StartSimpleBrowser();
+            case HtmlUnit:
+                _webDriver = StartHtmlUnit();
                 break;
             default:
-                throw new Exception(string.Format("Unknown browser selected: {0}.", _configuration.Browser));
+                throw new Exception(String.format("Unknown browser selected: {0}.", _configuration.Browser));
         }
-        if (_browser != Browsers.SimpleBrowser) {
-            _webDriver.Manage().Window.Maximize();
-            _webDriver.Manage().Cookies.DeleteAllCookies();
+        if (_browser != Browsers.HtmlUnit) {
+            _webDriver.manage().window().maximize();
+            _webDriver.manage().deleteAllCookies();
         }
-        _mainWindowHandler = _webDriver.CurrentWindowHandle;
+        _mainWindowHandler = _webDriver.getWindowHandle();
     }
 
     private InternetExplorerDriver StartInternetExplorer() {
-        var internetExplorerOptions = new InternetExplorerOptions
-        {
-            IntroduceInstabilityByIgnoringProtectedModeSettings = true,
-                    InitialBrowserUrl = "about:blank",
-                    EnableNativeEvents = true,
-                    IgnoreZoomLevel = true
-        } ;
-
-        return new InternetExplorerDriver(Directory.GetCurrentDirectory(), internetExplorerOptions);
+                return new InternetExplorerDriver();
     }
 
     private FirefoxDriver StartFirefox() {
-        var firefoxProfile = new FirefoxProfile
-        {
-            AcceptUntrustedCertificates = true,
-                    EnableNativeEvents = true
-        } ;
-
-        return new FirefoxDriver(firefoxProfile);
+        return new FirefoxDriver();
     }
 
     private ChromeDriver StartChrome() {
-        var chromeOptions = new ChromeOptions();
-        //var defaultDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\..\Local\Google\Chrome\User Data\Default";
-        return new ChromeDriver(Directory.GetCurrentDirectory(), chromeOptions);
+         //var defaultDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\..\Local\Google\Chrome\User Data\Default";
+        return new ChromeDriver();
     }
 
-    private SimpleBrowserDriver StartSimpleBrowser() {
-        var b = new Browser();
-        return new SimpleBrowserDriver(new BrowserWrapper(b));
+    private HtmlUnitDriver StartHtmlUnit() {
+        return new HtmlUnitDriver();
     }
 
 }
