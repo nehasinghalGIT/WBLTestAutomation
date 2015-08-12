@@ -10,6 +10,7 @@ import java.util.Properties;
 public class Configuration {
 
     public Browsers Browser;
+    public String Device;
     public String BaseUrl;
     public String TestResultPath;
     public String TestDataPath;
@@ -22,6 +23,7 @@ public class Configuration {
             props.load(new FileReader(new File("config.properties")));
             Browser = Browsers.valueOf(props.getProperty("browser"));
             BaseUrl = props.getProperty("url");
+            Device = props.getProperty("device");
             TestResultPath = props.getProperty("test-result-path");
             TestDataPath = props.getProperty("test-data-path");
             WaitTimeout = Integer.parseInt(props.getProperty("wait-timeout"));

@@ -1,16 +1,15 @@
 package com.wbl.utils;
 
-import org.openqa.selenium.*;
-import java.util.*;
+import java.util.Collection;
 
 /**
  * Created by svelupula on 8/8/2015.
  */
 public interface ElementsContainer {
 
-  /*  WebElement FindElement(By by);
+    HtmlElement findElement(String locator);
 
-    Collection<WebElement> FindElements(By by);*/
+    Collection<HtmlElement> findElements(String locator);
 
     String getDescription();
 }

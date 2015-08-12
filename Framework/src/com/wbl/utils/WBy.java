@@ -1,6 +1,6 @@
 package com.wbl.utils;
 
-import org.codehaus.jackson.*;
+import org.json.*;
 import org.openqa.selenium.By;
 
 import java.io.*;

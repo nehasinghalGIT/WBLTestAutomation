@@ -1,39 +1,44 @@
 package com.wbl.utils;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
+import org.apache.log4j.Logger;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Created by svelupula on 8/8/2015.
  */
-public class PageDriver {
+public class PageDriver implements ElementsContainer {
 
     private final Configuration _configuration;
     private final Browsers _browser;
     private WebDriver _webDriver;
     private String _mainWindowHandler;
+    private Logger _logger;
 
     public PageDriver(Configuration configuration) {
         _configuration = configuration;
         _browser = _configuration.Browser;
+        _logger = Logger.getLogger(PageDriver.class);
     }
 
     public WebDriver getDriver() {
         if (_webDriver == null) {
             try {
-                Start();
+                start();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -49,19 +54,20 @@ public class PageDriver {
         return _mainWindowHandler;
     }
 
-    public HtmlElement findElement(String locator) throws Exception {
+    public HtmlElement findElement(String locator) {
         try {
-            return new HtmlElement(this, getDriver().findElement(WBy.get(locator)));
+            return new HtmlElement(this, _webDriver.findElement(WBy.get(locator)));
         } catch (Exception ex) {
-            throw ex;
+            _logger.error(ex);
+            return null;
         }
     }
 
     // Do not throws exceptions, only return null
-    public Collection<HtmlElement> findElements(String locator) throws Exception {
+    public Collection<HtmlElement> findElements(String locator) {
         Collection<HtmlElement> elements = null;
         try {
-            Collection<WebElement> webElements = getDriver().findElements(WBy.get(locator));
+            Collection<WebElement> webElements = _webDriver.findElements(WBy.get(locator));
             if (webElements.size() > 0) {
                 elements = new ArrayList<HtmlElement>();
             }
@@ -71,7 +77,8 @@ public class PageDriver {
             }
             return elements;
         } catch (Exception ex) {
-            throw ex;
+            _logger.error(ex);
+            return null;
         }
     }
 
@@ -102,13 +109,13 @@ public class PageDriver {
         Thread.sleep(2000);
     }
 
-    public String GetCurrentUrl() {
+    public String getCurrentUrl() {
         return _webDriver.getCurrentUrl();
     }
 
-    public void SaveScreenshot(String path) {
+    public void saveScreenShot(String path) {
         try {
-            FileUtils.copyFile(((TakesScreenshot) _webDriver).getScreenshotAs(OutputType.FILE),new File(path));
+            FileUtils.copyFile(((TakesScreenshot) _webDriver).getScreenshotAs(OutputType.FILE), new File(path));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -120,23 +127,23 @@ public class PageDriver {
         return javaScriptExecutor.executeScript(javaScript, args);
     }
 
-    public String GetDescription() {
+    public String getDescription() {
         return "Browser";
     }
 
-    private void Start() throws Exception {
+    private void start() throws Exception {
         switch (_browser) {
             case InternetExplorer:
-                _webDriver = StartInternetExplorer();
+                _webDriver = startInternetExplorer();
                 break;
             case Firefox:
-                _webDriver = StartFirefox();
+                _webDriver = startFirefox();
                 break;
             case Chrome:
-                _webDriver = StartChrome();
+                _webDriver = startChrome();
                 break;
             case HtmlUnit:
-                _webDriver = StartHtmlUnit();
+                _webDriver = startHtmlUnit();
                 break;
             default:
                 throw new Exception(String.format("Unknown browser selected: {0}.", _configuration.Browser));
@@ -148,20 +155,40 @@ public class PageDriver {
         _mainWindowHandler = _webDriver.getWindowHandle();
     }
 
-    private InternetExplorerDriver StartInternetExplorer() {
-                return new InternetExplorerDriver();
+    private InternetExplorerDriver startInternetExplorer() {
+        System.setProperty("webdriver.ie.driver", String.format("%s/IEDriverServer.exe", System.getProperty("user.dir")));
+        return new InternetExplorerDriver();
     }
 
-    private FirefoxDriver StartFirefox() {
+    private FirefoxDriver startFirefox() {
         return new FirefoxDriver();
     }
 
-    private ChromeDriver StartChrome() {
-         //var defaultDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\..\Local\Google\Chrome\User Data\Default";
-        return new ChromeDriver();
+    private ChromeDriver startChrome() {
+        System.setProperty("webdriver.chrome.driver", String.format("%s/chromedriver.exe", System.getProperty("user.dir")));
+        DesiredCapabilities capabilities = DesiredCapabilities.chrome();
+
+        //Mobile Browsers using Chrome Emulation
+        if (!_configuration.Device.toLowerCase().equals("desktop")) {
+            Map<String, Object> chromeOptions = new HashMap<String, Object>();
+            Map<String, String> mobileEmulation = new HashMap<String, String>();
+            mobileEmulation.put("deviceName", _configuration.Device);
+            chromeOptions.put("mobileEmulation", mobileEmulation);
+            capabilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
+        }
+
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("start-maximized"); //To maximize the browser
+        options.addArguments("allow-file-access-from-files");
+        options.addArguments("disable-web-security");
+        options.addArguments("ignore-certifcate-errors");
+        options.addArguments("--always-authorize-plugins=true");
+
+        capabilities.setCapability(ChromeOptions.CAPABILITY, options);
+        return new ChromeDriver(capabilities);
     }
 
-    private HtmlUnitDriver StartHtmlUnit() {
+    private HtmlUnitDriver startHtmlUnit() {
         return new HtmlUnitDriver();
     }
 
