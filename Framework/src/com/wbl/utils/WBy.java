@@ -1,10 +1,14 @@
 package com.wbl.utils;
 
-import org.json.*;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.openqa.selenium.By;
 
-import java.io.*;
-import java.util.*;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.HashMap;
 
 /**
  * Created by svelupula on 8/8/2015.
@@ -17,21 +21,22 @@ public class WBy {
         if (_locators != null)
             return;
         _locators = new HashMap<String, String>();
+        JSONParser parser = new JSONParser();
+
         try {
-            JsonFactory f = new JsonFactory();
-            JsonParser jp = f.createJsonParser(new File("locators.json"));
-        } catch (Exception ex) {
+            Object obj = parser.parse(new FileReader(jsonPath));
 
-        }
-
-        /*for (var item in o1)
-        {
-            if (!_locators.ContainsKey(item.Key))
-            {
-                _locators.Add(item.Key, item.Value.ToString());
+            JSONObject jsonObject = (JSONObject) obj;
+            for (Object key : jsonObject.keySet()) {
+                _locators.put((String) key, (String) jsonObject.get(key));
             }
-
-        }*/
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
     public static String getValue(String key) {
