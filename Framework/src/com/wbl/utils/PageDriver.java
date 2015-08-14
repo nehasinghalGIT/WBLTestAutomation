@@ -6,6 +6,7 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -157,11 +158,41 @@ public class PageDriver implements ElementsContainer {
 
     private InternetExplorerDriver startInternetExplorer() {
         System.setProperty("webdriver.ie.driver", String.format("%s/IEDriverServer.exe", System.getProperty("user.dir")));
-        return new InternetExplorerDriver();
+        DesiredCapabilities caps = DesiredCapabilities.internetExplorer();
+        caps.setCapability(InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS, true);
+        caps.setCapability(InternetExplorerDriver.FORCE_CREATE_PROCESS, false);
+        caps.setCapability(InternetExplorerDriver.IE_SWITCHES, "-private");
+        caps.setCapability(InternetExplorerDriver.IGNORE_ZOOM_SETTING, "true");
+        caps.setCapability(InternetExplorerDriver.IE_ENSURE_CLEAN_SESSION, true);
+        return new InternetExplorerDriver(caps);
     }
 
     private FirefoxDriver startFirefox() {
-        return new FirefoxDriver();
+        FirefoxProfile firefoxProfile = new FirefoxProfile();
+        firefoxProfile.setAcceptUntrustedCertificates(true);
+        firefoxProfile.setPreference("browser.download.folderList", 2);
+        firefoxProfile.setPreference("browser.download.manager.showWhenStarting", false);
+        firefoxProfile.setPreference("browser.download.dir", _configuration.TestResultPath);
+        firefoxProfile.setPreference("browser.helperApps.neverAsk.saveToDisk", "text/csv");
+        firefoxProfile.setPreference("browser.download.manager.alertOnEXEOpen", false);
+        firefoxProfile.setPreference("browser.helperApps.neverAsk.saveToDisk", "application/vnd.ms-excel;application/msword;application/octet-stream");
+
+        firefoxProfile.setPreference("browser.download.manager.showWhenStarting",
+                false);
+        firefoxProfile.setPreference("browser.download.manager.focusWhenStarting",
+                false);
+        firefoxProfile.setPreference("browser.download.useDownloadDir", true);
+        firefoxProfile.setPreference("browser.helperApps.alwaysAsk.force", false);
+        firefoxProfile.setPreference("browser.download.manager.alertOnEXEOpen", false);
+        firefoxProfile.setPreference("browser.download.manager.closeWhenDone", true);
+        firefoxProfile.setPreference("browser.download.manager.showAlertOnComplete",
+                false);
+        firefoxProfile.setPreference("browser.download.manager.useWindow", false);
+        firefoxProfile.setPreference(
+                "services.sync.prefs.sync.browser.download.manager.showWhenStarting",
+                false);
+        firefoxProfile.setPreference("pdfjs.disabled", true);
+        return new FirefoxDriver(firefoxProfile);
     }
 
     private ChromeDriver startChrome() {
