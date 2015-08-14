@@ -13,10 +13,7 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -102,6 +99,10 @@ public class PageDriver implements ElementsContainer {
         }
     }
 
+    public String getTitle() {
+        return _webDriver.getTitle();
+    }
+
     public void implicitWait() throws Exception {
         if (_browser != Browsers.HtmlUnit) {
             _webDriver.manage().timeouts().implicitlyWait(2000, TimeUnit.MILLISECONDS);
@@ -112,6 +113,14 @@ public class PageDriver implements ElementsContainer {
 
     public String getCurrentUrl() {
         return _webDriver.getCurrentUrl();
+    }
+
+    public Set<String> getLinks(String locator) {
+        Set<String> links = new HashSet<String>();
+        for (HtmlElement el : this.findElements(locator)) {
+            links.add(el.getLink());
+        }
+        return links;
     }
 
     public void saveScreenShot(String path) {

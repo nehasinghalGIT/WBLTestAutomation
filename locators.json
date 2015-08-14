@@ -1,4 +1,5 @@
 {
-  "header.logo": "",
-  "header.social": ""
+  "header.logo": ".logo img#logo",
+  "header.social": "ul.social-icons",
+  "header.social.links": "ul.social-icons li a"
 }

@@ -62,6 +62,10 @@ public class HtmlElement implements ElementsContainer {
         return _element.getAttribute("class");
     }
 
+    public String getLink() {
+        return _element.getAttribute("href");
+    }
+
     public String getText() {
         return _element.getText();
     }
