@@ -24,8 +24,9 @@ public class Configuration {
             _logger = Logger.getLogger(Configuration.class);
             Properties props = new Properties();
             props.load(new FileReader(String.format("%s/config.properties", System.getProperty("user.dir"))));
-            Browser = Browsers.valueOf(props.getProperty("browser"));
-            /*Browser = Browsers.Firefox;
+            //Browser = Browsers.valueOf(props.getProperty("browser"));
+            String browser = props.getProperty("browser");
+            Browser = Browsers.Firefox;
             if(browser.toLowerCase().equals("firefox"))
             {
                 Browser = Browsers.Firefox;
@@ -42,7 +43,7 @@ public class Configuration {
             {
                 Browser = Browsers.InternetExplorer;
             }
-*/
+
             BaseUrl = props.getProperty("url");
             Device = props.getProperty("device");
             TestResultPath = props.getProperty("test-result-path");
