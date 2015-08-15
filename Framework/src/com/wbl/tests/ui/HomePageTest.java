@@ -21,7 +21,7 @@ public class HomePageTest extends BaseWebTest {
 
     @Test(priority = 1, alwaysRun = true)
     public void testSlidesCount() {
-        assertEquals(6, _hp.getSliderItemsCount());
+        assertEquals(8, _hp.getSliderItemsCount());
     }
 
 
