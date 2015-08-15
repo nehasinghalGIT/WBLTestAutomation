@@ -9,7 +9,7 @@ public class HomePage extends PortalPage {
 
     public HomePage(PageDriver driver) {
         super(driver);
-        driver.open("/");
+        driver.findElement("header.home").click();
     }
 
     public int getSliderItemsCount() {

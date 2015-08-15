@@ -2,5 +2,6 @@
   "header.logo": ".logo img#logo",
   "header.social": "ul.social-icons",
   "header.social.links": "ul.social-icons li a",
-  "home.slider.items": "#promo-slider ul li"
+  "home.slider.items": "#promo-slider ul li",
+  "header.home": ".navbar-nav li:first-child"
 }
