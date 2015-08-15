@@ -6,7 +6,6 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -161,12 +160,13 @@ public class PageDriver implements ElementsContainer {
                     _webDriver = startHtmlUnit();
                     break;
             }
+            _webDriver.get(_configuration.BaseUrl);
             if (_browser != Browsers.HtmlUnit) {
                 _webDriver.manage().window().maximize();
                 _webDriver.manage().deleteAllCookies();
             }
             _mainWindowHandler = _webDriver.getWindowHandle();
-            _webDriver.get(_configuration.BaseUrl);
+
         } catch (Exception ex) {
             _logger.error(ex);
         }
@@ -184,8 +184,8 @@ public class PageDriver implements ElementsContainer {
     }
 
     private FirefoxDriver startFirefox() {
-        FirefoxProfile firefoxProfile = new FirefoxProfile();
-        firefoxProfile.setAcceptUntrustedCertificates(true);
+        // FirefoxProfile firefoxProfile = new FirefoxProfile();
+        /*firefoxProfile.setAcceptUntrustedCertificates(true);
         firefoxProfile.setPreference("browser.download.folderList", 2);
         firefoxProfile.setPreference("browser.download.manager.showWhenStarting", false);
         firefoxProfile.setPreference("browser.download.dir", _configuration.TestResultPath);
@@ -207,8 +207,8 @@ public class PageDriver implements ElementsContainer {
         firefoxProfile.setPreference(
                 "services.sync.prefs.sync.browser.download.manager.showWhenStarting",
                 false);
-        firefoxProfile.setPreference("pdfjs.disabled", true);
-        return new FirefoxDriver(firefoxProfile);
+        firefoxProfile.setPreference("pdfjs.disabled", true);*/
+        return new FirefoxDriver();
     }
 
     private ChromeDriver startChrome() {
