@@ -1,13 +1,18 @@
 package com.wbl.pages;
 
-import com.wbl.base.BaseWebTest;
+import com.wbl.base.BasePage;
+import com.wbl.utils.PageDriver;
 
 import java.util.Set;
 
 /**
  * Created by svelupula on 8/14/2015.
  */
-public abstract class PortalPage extends BaseWebTest {
+public abstract class PortalPage extends BasePage {
+
+    public PortalPage(PageDriver driver) {
+        super(driver);
+    }
 
 
     public String getTitle() {

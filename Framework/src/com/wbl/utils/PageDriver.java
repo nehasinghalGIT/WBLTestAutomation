@@ -31,6 +31,7 @@ public class PageDriver implements ElementsContainer {
         _configuration = configuration;
         _browser = _configuration.Browser;
         _logger = Logger.getLogger(PageDriver.class);
+        start();
     }
 
     public WebDriver getDriver() {
@@ -141,28 +142,34 @@ public class PageDriver implements ElementsContainer {
         return "Browser";
     }
 
-    private void start() throws Exception {
-        switch (_browser) {
-            case InternetExplorer:
-                _webDriver = startInternetExplorer();
-                break;
-            case Firefox:
-                _webDriver = startFirefox();
-                break;
-            case Chrome:
-                _webDriver = startChrome();
-                break;
-            case HtmlUnit:
-                _webDriver = startHtmlUnit();
-                break;
-            default:
-                throw new Exception(String.format("Unknown browser selected: {0}.", _configuration.Browser));
+    private void start() {
+        try {
+            switch (_browser) {
+                case InternetExplorer:
+                    _webDriver = startInternetExplorer();
+                    break;
+                case Firefox:
+                    _webDriver = startFirefox();
+                    break;
+                case Chrome:
+                    _webDriver = startChrome();
+                    break;
+                case HtmlUnit:
+                    _webDriver = startHtmlUnit();
+                    break;
+                default:
+                    _webDriver = startHtmlUnit();
+                    break;
+            }
+            if (_browser != Browsers.HtmlUnit) {
+                _webDriver.manage().window().maximize();
+                _webDriver.manage().deleteAllCookies();
+            }
+            _mainWindowHandler = _webDriver.getWindowHandle();
+            _webDriver.get(_configuration.BaseUrl);
+        } catch (Exception ex) {
+            _logger.error(ex);
         }
-        if (_browser != Browsers.HtmlUnit) {
-            _webDriver.manage().window().maximize();
-            _webDriver.manage().deleteAllCookies();
-        }
-        _mainWindowHandler = _webDriver.getWindowHandle();
     }
 
     private InternetExplorerDriver startInternetExplorer() {

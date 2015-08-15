@@ -2,7 +2,6 @@ package com.wbl.utils;
 
 import org.apache.log4j.Logger;
 
-import java.io.File;
 import java.io.FileReader;
 import java.util.Properties;
 
@@ -24,8 +23,26 @@ public class Configuration {
         try {
             _logger = Logger.getLogger(Configuration.class);
             Properties props = new Properties();
-            props.load(new FileReader(new File("config.properties")));
+            props.load(new FileReader(String.format("%s/config.properties", System.getProperty("user.dir"))));
             Browser = Browsers.valueOf(props.getProperty("browser"));
+            /*Browser = Browsers.Firefox;
+            if(browser.toLowerCase().equals("firefox"))
+            {
+                Browser = Browsers.Firefox;
+            }
+            else if(browser.toLowerCase().equals("chrome"))
+            {
+                Browser = Browsers.Chrome;
+            }
+            else if(browser.toLowerCase().equals("htmlunit"))
+            {
+                Browser = Browsers.HtmlUnit;
+            }
+            else if(browser.toLowerCase().equals("ie"))
+            {
+                Browser = Browsers.InternetExplorer;
+            }
+*/
             BaseUrl = props.getProperty("url");
             Device = props.getProperty("device");
             TestResultPath = props.getProperty("test-result-path");
