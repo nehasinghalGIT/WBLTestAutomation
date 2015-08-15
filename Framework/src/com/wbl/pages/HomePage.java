@@ -9,6 +9,7 @@ public class HomePage extends PortalPage {
 
     public HomePage(PageDriver driver) {
         super(driver);
+        _logger.debug("Open Home Page");
         driver.findElement("header.home").click();
     }
 
