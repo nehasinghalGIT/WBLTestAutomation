@@ -13,6 +13,7 @@ public class Configuration {
     public Browsers Browser;
     public String Device;
     public String BaseUrl;
+    public String BaseURI;
     public String TestResultPath;
     public String TestDataPath;
     public int WaitTimeout;
@@ -45,6 +46,7 @@ public class Configuration {
             }
 
             BaseUrl = props.getProperty("url");
+            BaseURI = props.getProperty("uri");
             Device = props.getProperty("device");
             TestResultPath = props.getProperty("test-result-path");
             TestDataPath = props.getProperty("test-data-path");

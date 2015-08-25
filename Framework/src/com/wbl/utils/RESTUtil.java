@@ -1,11 +1,14 @@
 package com.wbl.utils;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 
 /**
@@ -14,19 +17,20 @@ import org.apache.log4j.Logger;
 public class RESTUtil {
 
     private final Configuration _configuration;
-    private String _baseURI;
     private Logger _logger;
     private HttpUriRequest request;
     private HttpResponse response;
     private Header[] headers = response.getAllHeaders();
+    private JSONArray jsonArray;
+    private JSONObject json;
 
     public RESTUtil(Configuration configuration) {
         _configuration = configuration;
         _logger = Logger.getLogger(PageDriver.class);
     }
 
-    public void get(String resource, String contentType, String accept, String authorization) throws Exception {
-        request = new HttpGet(_baseURI + resource);
+    private void get(String resource, String contentType, String accept, String authorization) throws Exception {
+        request = new HttpGet(_configuration.BaseURI + resource);
         if (contentType != null)
             request.setHeader("Content-Type", contentType);
         if (accept != null)
@@ -47,8 +51,16 @@ public class RESTUtil {
         return null;
     }
 
-    public void getJSON(String resource) throws Exception {
+    public void getJSONArray(String resource) throws Exception {
         get(resource, null, "application/json", null);
+        String json = IOUtils.toString(response.getEntity().getContent());
+        jsonArray = new JSONArray(json);
+    }
+
+    public void getJSONEntity(String resource) throws Exception {
+        get(resource, null, "application/json", null);
+        String json = IOUtils.toString(response.getEntity().getContent());
+        this.json = new JSONObject(json);
     }
 
     public boolean isValidResponse() {
@@ -61,6 +73,10 @@ public class RESTUtil {
 
     public String getContentType() {
         return getHeader("Content-Type");
+    }
+
+    public int getArrayCount() {
+        return jsonArray.length();
     }
 
 }
