@@ -59,4 +59,8 @@ public class RESTUtil {
         return response.getStatusLine().getStatusCode();
     }
 
+    public String getContentType() {
+        return getHeader("Content-Type");
+    }
+
 }
