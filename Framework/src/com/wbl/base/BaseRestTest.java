@@ -6,19 +6,19 @@ import org.apache.log4j.Logger;
 /**
  * Created by svelupula on 8/14/2015.
  */
-public abstract class BaseTest {
+public abstract class BaseRestTest {
 
     public static final Configuration _config;
 
     static {
-        _config = new Configuration(true);
+        _config = new Configuration(false);
     }
 
     //Rally connection
     public Logger _logger;
 
-    public BaseTest() {
-        _logger = Logger.getLogger(BaseTest.class);
+    public BaseRestTest() {
+        _logger = Logger.getLogger(BaseRestTest.class);
 
     }
 

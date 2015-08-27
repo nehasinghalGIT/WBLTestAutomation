@@ -7,7 +7,7 @@ import org.testng.annotations.BeforeSuite;
 /**
  * Created by svelupula on 8/14/2015.
  */
-public abstract class BaseApiTest extends BaseTest {
+public abstract class BaseApiTest extends BaseRestTest {
 
     public RESTUtil restUtil;
 

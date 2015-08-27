@@ -8,7 +8,10 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Iterator;
 
 
 /**
@@ -20,7 +23,7 @@ public class RESTUtil {
     private Logger _logger;
     private HttpUriRequest request;
     private HttpResponse response;
-    private Header[] headers = response.getAllHeaders();
+    private Header[] headers; //response.getAllHeaders();
     private JSONArray jsonArray;
     private JSONObject json;
 
@@ -37,7 +40,7 @@ public class RESTUtil {
             request.setHeader("Accept", accept);
         if (authorization != null)
             request.setHeader("Authorization", authorization);
-
+        request.addHeader("User-Agent", "USER_AGENT");
         response = HttpClientBuilder.create().build().execute(request);
         headers = response.getAllHeaders();
     }
@@ -63,6 +66,16 @@ public class RESTUtil {
         this.json = new JSONObject(json);
     }
 
+    public String parseJsonObject(String mKey)
+    {
+        String value = null;
+        try {
+            value = json.get(mKey).toString();
+        } catch (JSONException e) {
+           _logger.error(e);
+        }
+        return value;
+    }
     public boolean isValidResponse() {
         return (response != null);
     }
@@ -78,5 +91,15 @@ public class RESTUtil {
     public int getArrayCount() {
         return jsonArray.length();
     }
+
+    public String getContentLength()
+    {
+        return getHeader("Content-length") ;
+    }
+
+    public String getLocale() { return response.getLocale().toString();}
+
+    public String getServer() { return getHeader("Server");}
+
 
 }
