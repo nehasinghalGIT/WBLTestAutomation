@@ -1,7 +1,11 @@
 package com.wbl.utils;
 
+import org.apache.log4j.Logger;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Created by svelupula on 8/8/2015.
@@ -10,10 +14,40 @@ public class HtmlElement implements ElementsContainer {
 
     private final PageDriver _browser;
     private final WebElement _element;
+    private Logger _logger;
 
     public HtmlElement(PageDriver browser, WebElement element) {
         _element = element;
         _browser = browser;
+        _logger = Logger.getLogger(HtmlElement.class);
+    }
+
+    public HtmlElement findElement(String locator) {
+        try {
+            return new HtmlElement(this._browser, _element.findElement(WBy.get(locator)));
+        } catch (Exception ex) {
+            _logger.error(ex);
+            return null;
+        }
+    }
+
+    // Do not throws exceptions, only return null
+    public Collection<HtmlElement> findElements(String locator) {
+        Collection<HtmlElement> elements = null;
+        try {
+            Collection<WebElement> webElements = _element.findElements(WBy.get(locator));
+            if (webElements.size() > 0) {
+                elements = new ArrayList<HtmlElement>();
+            }
+            for (WebElement element : webElements) {
+                HtmlElement el = new HtmlElement(this._browser, element);
+                if (elements != null) elements.add(el);
+            }
+            return elements;
+        } catch (Exception ex) {
+            _logger.error(ex);
+            return null;
+        }
     }
 
     public boolean isDisplayed() {
@@ -26,6 +60,10 @@ public class HtmlElement implements ElementsContainer {
 
     public String getCssClass() {
         return _element.getAttribute("class");
+    }
+
+    public String getLink() {
+        return _element.getAttribute("href");
     }
 
     public String getText() {
@@ -51,15 +89,6 @@ public class HtmlElement implements ElementsContainer {
 
     public void click() {
         _element.click();
-            /*if (useJavaScript && _element.TagName != TagNames.Link)
-            {
-                _browser.ExecuteJavaScript(string.Format("$(arguments[0]).{0}();", JavaScriptEvents.Click), _element);
-            }
-            else
-            {
-                // Possible: _element.Click(); or _element.SendKeys(Keys.Enter);
-                new Actions(_browser.WebDriver).MoveToElement(_element).MoveByOffset(5, 5).Click().Build().Perform();
-            }*/
     }
 
     public void focus() {
